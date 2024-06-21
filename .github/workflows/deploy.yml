@@ -22,40 +22,8 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          REPO_NAME="${{ github.repository }}"
-          TEAM_SCOPE="namu-labs"
-          PROJECT_EXISTS=false
-          NEXT_PAGE=""
-
-          while true; do
-            if [ -z "$NEXT_PAGE" ]; then
-              RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN)
-            else
-              RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN --next $NEXT_PAGE)
-            fi
-
-            echo "$RESPONSE"
-
-            PROJECT_NAMES=$(echo "$RESPONSE" | grep -oP '(?<=\s)[^\s]+(?=\s+\[)')
-            NEXT_PAGE=$(echo "$RESPONSE" | grep -oP '(?<=--next )\d+')
-
-            for PROJECT_NAME in $PROJECT_NAMES; do
-              if [ "$PROJECT_NAME" == "$REPO_NAME" ]; then
-                PROJECT_EXISTS=true
-                break
-              fi
-            done
-
-            if [ "$PROJECT_EXISTS" == "true" ] || [ -z "$NEXT_PAGE" ]; then
-              break
-            fi
-          done
-
-          if [ "$PROJECT_EXISTS" == "false" ]; then
-            echo "Creating new Vercel project: $REPO_NAME"
-            echo "y" | vercel --scope $TEAM_SCOPE --token $VERCEL_TOKEN --confirm
-          else
-            echo "Project $REPO_NAME already exists in team $TEAM_SCOPE"
+          if ! vercel projects ls --scope namu-labs --token $VERCEL_TOKEN | grep -q "${{ github.repository }}"; then
+            vercel link --scope namu-labs --token $VERCEL_TOKEN
           fi
 
       - name: Deploy to Vercel
