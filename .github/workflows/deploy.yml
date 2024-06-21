@@ -34,8 +34,10 @@ jobs:
               RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN --next $NEXT_PAGE)
             fi
 
-            PROJECT_NAMES=$(echo $RESPONSE | jq -r '.projects[].name')
-            NEXT_PAGE=$(echo $RESPONSE | jq -r '.pagination.next')
+            echo "$RESPONSE"
+
+            PROJECT_NAMES=$(echo "$RESPONSE" | grep -oP '(?<=\s)[^\s]+(?=\s+\[)')
+            NEXT_PAGE=$(echo "$RESPONSE" | grep -oP '(?<=--next )\d+')
 
             for PROJECT_NAME in $PROJECT_NAMES; do
               if [ "$PROJECT_NAME" == "$REPO_NAME" ]; then
@@ -44,7 +46,7 @@ jobs:
               fi
             done
 
-            if [ "$PROJECT_EXISTS" == "true" ] || [ "$NEXT_PAGE" == "null" ]; then
+            if [ "$PROJECT_EXISTS" == "true" ] || [ -z "$NEXT_PAGE" ]; then
               break
             fi
           done
