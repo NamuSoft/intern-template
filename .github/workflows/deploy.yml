@@ -29,9 +29,9 @@ jobs:
 
           while true; do
             if [ -z "$NEXT_PAGE" ]; then
-              RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN --json)
+              RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN)
             else
-              RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN --next $NEXT_PAGE --json)
+              RESPONSE=$(vercel projects ls --scope $TEAM_SCOPE --token $VERCEL_TOKEN --next $NEXT_PAGE)
             fi
 
             PROJECT_NAMES=$(echo $RESPONSE | jq -r '.projects[].name')
