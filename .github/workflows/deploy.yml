@@ -22,11 +22,11 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          if ! vercel projects ls | grep -q "${{ github.repository }}"; then
-            vercel projects add ${{ github.repository }} --git-repo ${{ github.repository_url }}
+          if ! vercel projects ls --token $VERCEL_TOKEN | grep -q "${{ github.repository }}"; then
+            vercel projects add ${{ github.repository }} --git-repo ${{ github.repository_url }} --token $VERCEL_TOKEN
           fi
 
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: vercel --prod
+        run: vercel --prod --token $VERCEL_TOKEN
